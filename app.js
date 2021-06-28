@@ -1,8 +1,14 @@
 const express = require('express');
+const cors=require("cors");
 
 const app = express();
+app.use(cors());
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: '*',
+    }
+});
 
 const port = 5000;
 
@@ -13,11 +19,11 @@ io.on('connection', (socket) => {
     // Creating a new game and notifying the creator.
     socket.on('creategame', (data) => {
         rooms = rooms + 1;
-        socket.join(`room-${rooms}`);
+        socket.join(`room${rooms}`);
         socket.emit('newgame', {
             name: data.name,
-            room: `room-${rooms}`,
-            url: `http://livetictactoe.netlify.app/?roomId=room-${rooms}`
+            room: `room${rooms}`,
+            url: `http://livetictactoe.netlify.app/?roomid=room${rooms}&&name=${data.name}&&icon=${data.icon}`
         });
     });
   
@@ -26,8 +32,8 @@ io.on('connection', (socket) => {
       const room = io.nsps['/'].adapter.rooms[data.room];
       if (room && room.length === 1) {
         socket.join(data.room);
-        socket.broadcast.to(data.room).emit('player1', {});
-        socket.emit('player2', { name: data.name, room: data.room });
+        socket.broadcast.to(data.room).emit('creator', { name: data.name, icon: data.icon });
+        socket.emit('opponent', {});
       } else {
         socket.emit('error', { message: 'Room_Full' });
       }
