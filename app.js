@@ -33,16 +33,14 @@ io.on('connection', (socket) => {
         socket.emit('newgame', {
             name: data.name,
             room: `room${rooms}`,
-            url: `http://livetictactoe.netlify.app/?roomid=room${rooms}&&name=${data.name}&&icon=${data.icon}`
+            url: `https://livetictactoe.netlify.app/?roomid=room${rooms}&&name=${data.name}&&icon=${data.icon}`
         });
     });
   
     // Connect the 2nd Player to the requested room. Show error if the room is full.
     socket.on('joingame', (data) => {
-    //   const room = io.nsps['/'].adapter.rooms[data.room];
         const room = io.sockets.adapter.rooms.get(data.room);
         if (room && room.size === 1) {
-            console.log(data)
             socket.join(data.room);
             socket.broadcast.to(data.room).emit('creator', { name: data.name, icon: data.icon });
             socket.emit('opponent', {});
@@ -53,15 +51,16 @@ io.on('connection', (socket) => {
   
     // Handle the turn played by either player and notify the other.
     socket.on('playturn', (data) => {
-      socket.broadcast.to(data.room).emit('turnplayed', {
-        tile: data.tile,
-        room: data.room,
-      });
+        socket.broadcast.to(data.room).emit('turnplayed', {
+            index1: data.index1,
+            index2: data.index2,
+            chance: data.chance
+        });
     });
   
     // Notify the players about the result.
     socket.on('gamecomplete', (data) => {
-      socket.broadcast.to(data.room).emit('gameend', data);
+        socket.broadcast.to(data.room).emit('gameend', { champion: data.champion });
     });
 
   });
