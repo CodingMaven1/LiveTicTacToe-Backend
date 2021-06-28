@@ -6,17 +6,7 @@ app.use(cors());
 const server = require('http').Server(app);
 const io = require('socket.io')(server, {
     cors: {
-        origin: "*",
-       
-        // handlePreflightRequest: (req, res) => {
-        //     res.writeead(200, {
-        //         "Access-Control-Allow-Origin": "*",
-        //         "Access-Control-Allow-Methods": "GET,POST",
-        //         "Access-Control-Allow-Headers": "my-custom-header",
-        //         "Access-Control-Allow-Credentials": true
-        //     });
-        //     res.end();
-        // }
+        origin: "*"
     }
 });
 
