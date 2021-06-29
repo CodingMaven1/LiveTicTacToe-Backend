@@ -10,8 +10,6 @@ const io = require('socket.io')(server, {
     }
 });
 
-const port = 5000;
-
 let rooms = 0;
 
 io.on('connection', (socket) => {
@@ -56,6 +54,6 @@ io.on('connection', (socket) => {
   });
   
   
-server.listen(port, () => {
-    console.log(`Server running at ${port}`);
+server.listen(process.env.PORT || 5000, () => {
+    console.log(`Server is running...`);
 });
